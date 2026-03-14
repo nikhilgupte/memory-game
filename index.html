@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Memory Match</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>Memory Match</h1>
+        <p>Flip two cards. Match a pair to score and keep your turn.</p>
+      </header>
+
+      <section class="controls" aria-label="Game controls">
+        <div class="control-row">
+          <fieldset>
+            <legend>Players (1-4)</legend>
+            <label>
+              <input type="radio" name="player-count" value="1" />
+              1 player
+            </label>
+            <label>
+              <input type="radio" name="player-count" value="2" checked />
+              2 players
+            </label>
+            <label>
+              <input type="radio" name="player-count" value="3" />
+              3 players
+            </label>
+            <label>
+              <input type="radio" name="player-count" value="4" />
+              4 players
+            </label>
+          </fieldset>
+
+          <div class="button-group">
+            <button id="restart-btn" type="button">Start / Restart Game</button>
+            <button id="invite-btn" class="secondary-button" type="button">
+              Copy Share Link
+            </button>
+          </div>
+        </div>
+
+        <div class="multiplayer">
+          <div class="multiplayer-row">
+            <button id="host-btn" type="button">Host Multiplayer</button>
+            <div class="join-group">
+              <input
+                id="room-input"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                placeholder="Room code"
+                aria-label="Room code"
+              />
+              <button id="join-btn" class="secondary-button" type="button">
+                Join Room
+              </button>
+            </div>
+          </div>
+          <p class="multiplayer-info">
+            Room: <span id="room-code">-</span> ·
+            <span id="connection-status">Offline</span>
+          </p>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite">Ready to play.</p>
+      </section>
+
+      <section class="scoreboard-section" aria-label="Scoreboard">
+        <h2>Scores</h2>
+        <ul id="scoreboard" class="scoreboard"></ul>
+      </section>
+
+      <section id="game-board" class="board" role="grid" aria-label="Memory game board"></section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

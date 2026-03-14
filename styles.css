@@ -1,0 +1,275 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --bg: #f6f8fb;
+  --card-front: #2f3b52;
+  --card-back: #ffffff;
+  --accent: #2d8a34;
+  --text: #1d2433;
+  --muted: #5e6c84;
+  --shadow: 0 8px 20px rgba(20, 24, 31, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.controls {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+fieldset {
+  border: 1px solid #d6dbe6;
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+#restart-btn,
+#host-btn {
+  background: var(--card-front);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--card-front);
+  border: 2px solid var(--card-front);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.secondary-button:focus-visible {
+  outline: 2px solid #0b61ff;
+  outline-offset: 2px;
+}
+
+.multiplayer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.multiplayer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.join-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+#room-input {
+  font: inherit;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #d6dbe6;
+  min-width: 140px;
+}
+
+.multiplayer-info {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+#restart-btn:focus-visible {
+  outline: 2px solid #0b61ff;
+  outline-offset: 2px;
+}
+
+.status {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+.scoreboard-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+}
+
+.scoreboard-section h2 {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.scoreboard {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.score-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f1f3f8;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.score-item.active {
+  border-color: #0b61ff;
+  background: #e7f0ff;
+}
+
+.score-item.leader {
+  border-color: var(--accent);
+  background: #dff2e1;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(48px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: none;
+  padding: 0;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: var(--shadow);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.card-front {
+  background: var(--card-front);
+  color: #ffffff;
+}
+
+.card-back {
+  background: var(--card-back);
+  color: var(--text);
+  border: 2px solid var(--card-front);
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.card-back img {
+  width: 60%;
+  height: 60%;
+  display: block;
+  pointer-events: none;
+}
+
+.card.flipped .card-front {
+  opacity: 0;
+}
+
+.card.flipped .card-back {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card.matched .card-back {
+  border-color: var(--accent);
+  background: #dff2e1;
+}
+
+.card:focus-visible {
+  outline: 2px solid #0b61ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .board {
+    grid-template-columns: repeat(6, minmax(40px, 1fr));
+    gap: 8px;
+  }
+
+  .card-face {
+    font-size: 1.1rem;
+  }
+}
