@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(sleep:*)",
       "Bash(curl:*)",
-      "Bash(identify:*)"
+      "Bash(identify:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

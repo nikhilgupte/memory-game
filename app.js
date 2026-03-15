@@ -520,6 +520,8 @@ function handleCardSelection(index) {
   updateCardUI(index);
 
   if (firstSelection === null) {
+    // Show restart button on first card flip
+    showRestartButton();
     // Increment turn counter when a new turn starts
     turnCount += 1;
     firstSelection = index;
@@ -551,6 +553,10 @@ function handleCardSelection(index) {
 function startGame() {
   if (multiplayer.active) {
     return;
+  }
+  // Hide restart button until game is in play
+  if (restartButton) {
+    restartButton.style.display = 'none';
   }
   players = Array.from({ length: getPlayerCount() }, (_, index) => ({
     name: `Player ${index + 1}`,
@@ -836,6 +842,25 @@ modeTabs.forEach((tab) => {
     document.getElementById(`${mode}-panel`).classList.add("active");
   });
 });
+
+// Restart button
+const restartButton = document.getElementById('restart-btn');
+if (restartButton) {
+  restartButton.style.display = 'none'; // Hidden until game starts
+  restartButton.addEventListener('click', () => {
+    if (multiplayer.active) {
+      sendMessage({ type: "restart-game" });
+    } else {
+      startGame();
+    }
+  });
+}
+
+function showRestartButton() {
+  if (restartButton) {
+    restartButton.style.display = 'block';
+  }
+}
 
 // Cheat mode toggle
 const cheatModeCheckbox = document.getElementById('cheat-mode');
