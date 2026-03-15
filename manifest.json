@@ -1,6 +1,6 @@
 {
-  "name": "Memory Match Game",
-  "short_name": "Memory Match",
+  "name": "Pairingo",
+  "short_name": "Pairingo",
   "description": "A fun multiplayer memory matching game. Test your memory and compete with friends!",
   "start_url": "/",
   "display": "standalone",

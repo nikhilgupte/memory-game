@@ -22,7 +22,6 @@ const OBJECT_TYPES = [
 
 const board = document.getElementById("game-board");
 const statusText = document.getElementById("status");
-const restartButton = document.getElementById("restart-btn");
 const inviteButton = document.getElementById("invite-btn");
 const hostButton = document.getElementById("host-btn");
 const joinButton = document.getElementById("join-btn");
@@ -43,6 +42,10 @@ let lockBoard = false;
 let matchedPairs = 0;
 let multiplayerGameOver = false;
 let currentDeckSignature = "";
+let turnCount = 0;
+let turnTimerInterval = null;
+let turnTimerDisplay = null;
+let localGameSpeedMs = 0;
 
 const multiplayer = {
   active: false,
@@ -61,6 +64,13 @@ function setStatus(message) {
   statusText.textContent = message;
 }
 
+function setTurnIndicator(message) {
+  const indicator = document.getElementById('turn-indicator');
+  if (indicator) {
+    indicator.textContent = message;
+  }
+}
+
 function setRoomCode(code) {
   roomCode.textContent = code || "-";
 }
@@ -76,15 +86,6 @@ function setPlayerControlsDisabled(disabled) {
 }
 
 function updateMultiplayerControls() {
-  if (multiplayer.active) {
-    restartButton.textContent = multiplayer.isHost
-      ? "Restart Game"
-      : "Waiting for Host";
-    restartButton.disabled = !multiplayer.isHost;
-  } else {
-    restartButton.textContent = "Start / Restart Game";
-    restartButton.disabled = false;
-  }
   setPlayerControlsDisabled(multiplayer.active);
 }
 
@@ -285,16 +286,25 @@ function renderScoreboard() {
 
 function renderBoard() {
   board.innerHTML = "";
+  const cheatMode = document.getElementById('cheat-mode')?.checked || false;
   deck.forEach((card, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "card";
     button.dataset.index = String(index);
+    button.dataset.matchId = String(card.matchId);
     button.setAttribute("role", "gridcell");
     button.setAttribute("aria-label", "Hidden card");
+    let frontText = '?';
+    if (cheatMode) {
+      frontText = String(card.matchId);
+    }
     button.innerHTML =
-      '<span class="card-face card-front">?</span>' +
+      `<span class="card-face card-front">${frontText}</span>` +
       `<span class="card-face card-back"><img src="${card.image}" alt="" aria-hidden="true" /></span>`;
+    if (cheatMode) {
+      button.classList.add('cheat-mode');
+    }
     board.appendChild(button);
   });
 }
@@ -319,9 +329,13 @@ function resetSelections() {
 
 function advancePlayer() {
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  // Update turn indicator immediately
+  const turnMsg = players.length === 1 ? "Your turn" : `${players[currentPlayerIndex].name}'s turn`;
+  setTurnIndicator(turnMsg);
 }
 
 function endGame() {
+  clearTurnTimer();
   lockBoard = true;
   const highestScore = Math.max(...players.map((player) => player.score));
   let message = "";
@@ -346,6 +360,7 @@ function endGame() {
 }
 
 function handleMatch(firstIndex, secondIndex) {
+  clearTurnTimer();
   deck[firstIndex].matched = true;
   deck[secondIndex].matched = true;
   matchedPairs += 1;
@@ -371,6 +386,7 @@ function handleMatch(firstIndex, secondIndex) {
 }
 
 function handleMismatch(firstIndex, secondIndex) {
+  clearTurnTimer();
   const message =
     players.length === 1 ? "No match. Try again." : "No match. Next player's turn.";
   setStatus(message);
@@ -402,6 +418,82 @@ function evaluateSelection() {
   }
 }
 
+function startTurnTimer(ms) {
+  clearTurnTimer();
+  if (!ms) {
+    console.log('startTurnTimer: ms is 0 or falsy, skipping');
+    return;
+  }
+  const timerEl = document.getElementById('turn-timer');
+  const fillEl = document.getElementById('timer-fill');
+  if (!timerEl || !fillEl) {
+    console.error('Timer elements not found');
+    return;
+  }
+  console.log('Timer started for', ms, 'ms');
+  timerEl.classList.remove('hidden');
+  fillEl.style.transition = 'none';
+  fillEl.style.width = '100%';
+  const start = Date.now();
+
+  turnTimerDisplay = setInterval(() => {
+    const elapsed = Date.now() - start;
+    const remaining = Math.max(0, ms - elapsed);
+    const pct = (remaining / ms) * 100;
+    fillEl.style.transition = 'width 0.1s linear';
+    fillEl.style.width = pct + '%';
+    if (remaining <= 3000) {
+      timerEl.classList.add('urgent');
+    }
+  }, 50);
+
+  turnTimerInterval = setTimeout(() => {
+    console.log('Timer expired!');
+    clearTurnTimer();
+    // Time's up - if player hasn't flipped 2 cards, auto-advance (local mode only)
+    if (secondSelection === null && !multiplayer.active) {
+      console.log('Auto-advancing turn');
+      handleTimeoutTurn();
+    }
+  }, ms);
+}
+
+function handleTimeoutTurn() {
+  if (firstSelection !== null) {
+    // Flip back any revealed card
+    deck[firstSelection].flipped = false;
+    updateCardUI(firstSelection);
+  }
+  resetSelections();
+  advancePlayer();
+  renderScoreboard();
+  const turnMessage =
+    players.length === 1
+      ? "Time's up! Your turn. Select two cards."
+      : `${players[currentPlayerIndex].name}'s turn.`;
+  setStatus(turnMessage);
+  const turnIndicatorMsg = players.length === 1 ? "Your turn" : `${players[currentPlayerIndex].name}'s turn`;
+  setTurnIndicator(turnIndicatorMsg);
+  lockBoard = false;
+  // Timer will start when the next player flips their first card
+}
+
+function clearTurnTimer() {
+  if (turnTimerDisplay) {
+    clearInterval(turnTimerDisplay);
+    turnTimerDisplay = null;
+  }
+  if (turnTimerInterval) {
+    clearTimeout(turnTimerInterval);
+    turnTimerInterval = null;
+  }
+  const timerEl = document.getElementById('turn-timer');
+  if (timerEl) {
+    timerEl.classList.add('hidden');
+    timerEl.classList.remove('urgent');
+  }
+}
+
 function handleCardSelection(index) {
   if (multiplayer.active) {
     if (lockBoard) {
@@ -428,12 +520,26 @@ function handleCardSelection(index) {
   updateCardUI(index);
 
   if (firstSelection === null) {
+    // Increment turn counter when a new turn starts
+    turnCount += 1;
     firstSelection = index;
+    // Check if timer is enabled
+    const timerEnabled = document.getElementById('timer-enabled')?.checked || false;
+    if (timerEnabled) {
+      // Calculate time based on pairs discovered: 12s at start, 3s when all pairs found
+      const pairsDiscovered = matchedPairs;
+      const timeSeconds = Math.max(3, 12 - (pairsDiscovered / TOTAL_PAIRS) * 9);
+      const timeMs = timeSeconds * 1000;
+      console.log('Pairs discovered:', pairsDiscovered, 'Time per turn:', timeSeconds, 's');
+      startTurnTimer(timeMs);
+    }
     const promptMessage =
       players.length === 1
         ? "Select another card."
         : `${players[currentPlayerIndex].name}'s turn. Select another card.`;
     setStatus(promptMessage);
+    const turnMsg = players.length === 1 ? "Your turn" : `${players[currentPlayerIndex].name}'s turn`;
+    setTurnIndicator(turnMsg);
     return;
   }
 
@@ -456,12 +562,14 @@ function startGame() {
   lockBoard = false;
   matchedPairs = 0;
   multiplayerGameOver = false;
+  turnCount = 0;
   deck = createDeck();
   currentDeckSignature = "";
 
   renderBoard();
   renderScoreboard();
   setStatus(`${players[currentPlayerIndex].name}'s turn. Select two cards.`);
+  setTurnIndicator(`${players[currentPlayerIndex].name}'s turn`);
 }
 
 function updateUrlWithRoom(roomId) {
@@ -505,6 +613,17 @@ function applyServerState(state) {
   lockBoard = state.locked;
   multiplayerGameOver = state.gameOver;
 
+  turnCount = state.turnCount || 0;
+  document.getElementById('turn-count').textContent = turnCount;
+
+  clearTurnTimer();
+  if (!state.gameOver && !state.locked) {
+    const currentPlayer = players[currentPlayerIndex];
+    if (currentPlayer && currentPlayer.id === multiplayer.playerId && state.speedMs) {
+      startTurnTimer(state.speedMs);
+    }
+  }
+
   renderScoreboard();
   if (state.gameOver) {
     const highestScore = Math.max(...players.map((player) => player.score));
@@ -526,8 +645,10 @@ function applyServerState(state) {
   }
   if (currentPlayer.id === multiplayer.playerId) {
     setStatus("Your turn. Select two cards.");
+    setTurnIndicator("Your turn");
   } else {
     setStatus(`${currentPlayer.name}'s turn.`);
+    setTurnIndicator(`${currentPlayer.name}'s turn`);
   }
 }
 
@@ -619,7 +740,8 @@ function sendMessage(payload) {
 }
 
 function hostMultiplayer() {
-  sendMessage({ type: "create-room" });
+  const timerEnabled = document.getElementById('online-timer-enabled')?.checked || false;
+  sendMessage({ type: "create-room", timerEnabled });
 }
 
 function joinMultiplayer(code) {
@@ -669,13 +791,7 @@ board.addEventListener("click", (event) => {
   handleCardSelection(Number(button.dataset.index));
 });
 
-restartButton.addEventListener("click", () => {
-  if (multiplayer.active) {
-    sendMessage({ type: "restart-game" });
-    return;
-  }
-  startGame();
-});
+// Restart button removed - game auto-starts on first card flip
 
 inviteButton.addEventListener("click", () => {
   copyInviteLink();
@@ -695,6 +811,49 @@ roomInput.addEventListener("keydown", (event) => {
     const code = roomInput.value.trim().toUpperCase();
     joinMultiplayer(code);
   }
+});
+
+// Mode tab switching
+const modeTabs = document.querySelectorAll(".mode-tab");
+const modePanels = document.querySelectorAll(".mode-panel");
+
+modeTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const mode = tab.dataset.mode;
+
+    // Update tab states
+    modeTabs.forEach((t) => {
+      t.classList.remove("active");
+      t.setAttribute("aria-selected", "false");
+    });
+    tab.classList.add("active");
+    tab.setAttribute("aria-selected", "true");
+
+    // Update panel visibility
+    modePanels.forEach((panel) => {
+      panel.classList.remove("active");
+    });
+    document.getElementById(`${mode}-panel`).classList.add("active");
+  });
+});
+
+// Cheat mode toggle
+const cheatModeCheckbox = document.getElementById('cheat-mode');
+if (cheatModeCheckbox) {
+  cheatModeCheckbox.addEventListener('change', () => {
+    if (deck.length > 0) {
+      renderBoard();
+    }
+  });
+}
+
+// UI toggle (slide controls/scoreboard off-screen)
+const toggleUIBtn = document.getElementById("toggle-ui");
+const app = document.querySelector(".app");
+
+toggleUIBtn.addEventListener("click", () => {
+  app.classList.toggle("ui-hidden");
+  toggleUIBtn.classList.toggle("collapsed");
 });
 
 const roomParam = new URLSearchParams(window.location.search).get("room");

@@ -89,6 +89,8 @@ function buildState(room) {
       : null,
     locked: room.locked,
     gameOver: room.matched.size === TOTAL_PAIRS,
+    turnCount: room.turnCount,
+    speedMs: room.speedMs,
   };
 }
 
@@ -111,22 +113,44 @@ function findPlayer(room, playerId) {
   return room.players.find((player) => player.id === playerId);
 }
 
+function startTurnTimer(room) {
+  clearTurnTimer(room);
+  if (!room.speedMs || room.matched.size === TOTAL_PAIRS) return;
+  room.turnTimer = setTimeout(() => {
+    // Force-advance: clear any partial reveal, advance player
+    room.revealed = [];
+    room.locked = false;
+    room.currentPlayerIndex = getNextActiveIndex(room, room.currentPlayerIndex);
+    broadcast(room, { type: "state-update", state: buildState(room) });
+    startTurnTimer(room); // start fresh for new player
+  }, room.speedMs);
+}
+
+function clearTurnTimer(room) {
+  if (room.turnTimer) {
+    clearTimeout(room.turnTimer);
+    room.turnTimer = null;
+  }
+}
+
 function resetRoom(room) {
   if (room.pendingTimeout) {
     clearTimeout(room.pendingTimeout);
   }
+  clearTurnTimer(room);
   room.seed = createSeed();
   room.deck = createDeck(room.seed);
   room.matched = new Set();
   room.revealed = [];
   room.locked = false;
   room.currentPlayerIndex = 0;
+  room.turnCount = 0;
   room.players.forEach((player) => {
     player.score = 0;
   });
 }
 
-function handleCreateRoom(ws) {
+function handleCreateRoom(ws, { speedMs = 0 } = {}) {
   const roomId = createRoomId();
   const seed = createSeed();
   const room = {
@@ -140,6 +164,9 @@ function handleCreateRoom(ws) {
     currentPlayerIndex: 0,
     hostId: null,
     pendingTimeout: null,
+    turnCount: 0,
+    speedMs: speedMs || 0,
+    turnTimer: null,
   };
   const player = createPlayer("Player 1");
   player.ws = ws;
@@ -212,6 +239,7 @@ function handleSelect(ws, index) {
     return;
   }
 
+  clearTurnTimer(room);
   room.revealed.push(index);
   broadcast(room, { type: "state-update", state: buildState(room) });
 
@@ -219,6 +247,7 @@ function handleSelect(ws, index) {
     return;
   }
 
+  room.turnCount += 1;
   room.locked = true;
   const [first, second] = room.revealed;
   const isMatch = room.deck[first] === room.deck[second];
@@ -230,6 +259,7 @@ function handleSelect(ws, index) {
     room.revealed = [];
     room.locked = false;
     broadcast(room, { type: "state-update", state: buildState(room) });
+    startTurnTimer(room);
     return;
   }
 
@@ -241,6 +271,7 @@ function handleSelect(ws, index) {
       room.currentPlayerIndex
     );
     broadcast(room, { type: "state-update", state: buildState(room) });
+    startTurnTimer(room);
   }, 900);
 }
 
@@ -289,7 +320,7 @@ wss.on("connection", (ws) => {
 
     switch (message.type) {
       case "create-room":
-        handleCreateRoom(ws);
+        handleCreateRoom(ws, { speedMs: message.speedMs });
         break;
       case "join-room":
         handleJoinRoom(ws, String(message.roomId || "").trim().toUpperCase());

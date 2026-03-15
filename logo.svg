@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Left card with dashed lines -->
+  <g>
+    <path d="M30 40 Q20 40 20 50 L20 140 Q20 150 30 150 L80 150 Q90 150 90 140 L90 50 Q90 40 80 40 Z" fill="white" stroke="#4a5568" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Dashed lines on left card -->
+    <line x1="35" y1="65" x2="55" y2="65" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="3,2"/>
+    <line x1="35" y1="80" x2="55" y2="80" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="3,2"/>
+    <line x1="35" y1="95" x2="55" y2="95" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="3,2"/>
+    <line x1="35" y1="110" x2="55" y2="110" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="3,2"/>
+    <line x1="35" y1="125" x2="55" y2="125" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="3,2"/>
+  </g>
+
+  <!-- Right card with lightbulb -->
+  <g>
+    <path d="M120 40 Q110 40 110 50 L110 140 Q110 150 120 150 L170 150 Q180 150 180 140 L180 50 Q180 40 170 40 Z" fill="white" stroke="#4a5568" stroke-width="3" stroke-linejoin="round"/>
+
+    <!-- Lightbulb -->
+    <g transform="translate(145, 85)">
+      <!-- Bulb -->
+      <circle cx="0" cy="-5" r="18" fill="#f6d25f" stroke="#f6d25f" stroke-width="2"/>
+      <!-- Filament -->
+      <path d="M-6 -5 Q-4 -12 0 -11 Q4 -12 6 -5" stroke="#2d3748" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Base -->
+      <rect x="-5" y="13" width="10" height="6" fill="#9ca3af" rx="1"/>
+      <!-- Neck lines -->
+      <line x1="-4" y1="13" x2="-3" y2="8" stroke="#2d3748" stroke-width="1.5"/>
+      <line x1="4" y1="13" x2="3" y2="8" stroke="#2d3748" stroke-width="1.5"/>
+      <!-- Glow rays -->
+      <g stroke="#f6d25f" stroke-width="2" opacity="0.6">
+        <line x1="0" y1="-25" x2="0" y2="-32"/>
+        <line x1="18" y1="-12" x2="24" y2="-18"/>
+        <line x1="18" y1="3" x2="24" y2="9"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -6,21 +6,37 @@
     <meta name="theme-color" content="#6366f1" />
     <meta name="description" content="A fun multiplayer memory matching game. Test your memory and compete with friends!" />
     <link rel="manifest" href="manifest.json" />
-    <link rel="icon" type="image/png" href="logo.png" />
-    <link rel="apple-touch-icon" href="logo.png" />
-    <title>Memory Match</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="logo-192.png" />
+    <title>Pairingo</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app">
       <header class="header">
-        <h1>Memory Match</h1>
-        <p>Flip two cards. Match a pair to score and keep your turn.</p>
+        <div class="header-content">
+          <img src="logo.png" alt="" class="header-logo" />
+          <div class="header-text">
+            <h1>Pairingo</h1>
+            <p>Flip two cards. Match a pair to score and keep your turn.</p>
+          </div>
+        </div>
+        <button id="toggle-ui" class="toggle-ui-btn" title="Toggle controls visibility" aria-label="Toggle controls visibility">
+          <span class="toggle-icon">▼</span>
+        </button>
       </header>
 
       <section class="controls" aria-label="Game controls">
-        <div class="control-row">
-          <fieldset>
+        <!-- Mode tabs -->
+        <div class="mode-tabs" role="tablist">
+          <button class="mode-tab active" role="tab" aria-selected="true" aria-controls="local-panel" data-mode="local">Local</button>
+          <button class="mode-tab" role="tab" aria-selected="false" aria-controls="online-panel" data-mode="online">Online</button>
+        </div>
+
+        <!-- Local mode panel -->
+        <div id="local-panel" class="mode-panel active" role="tabpanel" aria-labelledby="local-tab">
+          <!-- Hidden radio inputs for app.js compatibility -->
+          <fieldset class="hidden-fieldset" aria-hidden="true">
             <legend>Players (1-4)</legend>
             <label>
               <input type="radio" name="player-count" value="1" />
@@ -40,44 +56,90 @@
             </label>
           </fieldset>
 
-          <div class="button-group">
-            <button id="restart-btn" type="button">Start / Restart Game</button>
-            <button id="invite-btn" class="secondary-button" type="button">
-              Copy Share Link
-            </button>
+          <!-- Timer toggle -->
+          <div class="timer-toggle">
+            <label>
+              <input type="checkbox" id="timer-enabled" name="timer-enabled" checked />
+              <span>Timer (12s → 3s)</span>
+            </label>
           </div>
+
+          <!-- Cheat mode toggle -->
+          <div class="timer-toggle">
+            <label>
+              <input type="checkbox" id="cheat-mode" name="cheat-mode" />
+              <span>Cheat Mode</span>
+            </label>
+          </div>
+
+          <!-- Player count pill buttons -->
+          <div class="player-count-selector">
+            <label class="player-pill">
+              <input type="radio" name="player-count" value="1" />
+              <span>1</span>
+            </label>
+            <label class="player-pill">
+              <input type="radio" name="player-count" value="2" checked />
+              <span>2</span>
+            </label>
+            <label class="player-pill">
+              <input type="radio" name="player-count" value="3" />
+              <span>3</span>
+            </label>
+            <label class="player-pill">
+              <input type="radio" name="player-count" value="4" />
+              <span>4</span>
+            </label>
+          </div>
+
+          <button id="invite-btn" class="secondary-button" type="button">Copy Share Link</button>
         </div>
 
-        <div class="multiplayer">
-          <div class="multiplayer-row">
-            <button id="host-btn" type="button">Host Multiplayer</button>
-            <div class="join-group">
+        <!-- Online mode panel (hidden by default) -->
+        <div id="online-panel" class="mode-panel" role="tabpanel" aria-labelledby="online-tab">
+          <!-- Timer toggle for online -->
+          <div class="timer-toggle">
+            <label>
+              <input type="checkbox" id="online-timer-enabled" name="online-timer-enabled" checked />
+              <span>Timer (12s → 3s)</span>
+            </label>
+          </div>
+          <div class="online-controls">
+            <button id="host-btn" class="primary-button" type="button">Host Multiplayer</button>
+            <div class="join-section">
               <input
                 id="room-input"
                 type="text"
                 inputmode="text"
                 autocomplete="off"
-                placeholder="Room code"
+                placeholder="Enter room code"
                 aria-label="Room code"
               />
-              <button id="join-btn" class="secondary-button" type="button">
-                Join Room
-              </button>
+              <button id="join-btn" class="secondary-button" type="button">Join Room</button>
             </div>
           </div>
-          <p class="multiplayer-info">
-            Room: <span id="room-code">-</span> ·
-            <span id="connection-status">Offline</span>
+          <p class="connection-info">
+            Room: <span id="room-code">-</span> · <span id="connection-status">Offline</span>
           </p>
         </div>
 
-        <p id="status" class="status" role="status" aria-live="polite">Ready to play.</p>
+        <!-- Status bar -->
+        <div class="status-bar">
+          <p id="status" class="status" role="status" aria-live="polite">Ready to play.</p>
+        </div>
       </section>
 
       <section class="scoreboard-section" aria-label="Scoreboard">
         <h2>Scores</h2>
         <ul id="scoreboard" class="scoreboard"></ul>
       </section>
+
+      <div class="game-header">
+        <p id="turn-indicator" class="turn-indicator">Ready to play.</p>
+        <div id="turn-timer" class="turn-timer hidden">
+          <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
+        </div>
+      </div>
 
       <section id="game-board" class="board" role="grid" aria-label="Memory game board"></section>
     </div>
