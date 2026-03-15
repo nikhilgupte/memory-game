@@ -1,0 +1,61 @@
+{
+  "name": "Memory Match Game",
+  "short_name": "Memory Match",
+  "description": "A fun multiplayer memory matching game. Test your memory and compete with friends!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "200x200",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "200x200",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.png",
+      "sizes": "200x200",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Game",
+      "short_name": "Play",
+      "description": "Start a new memory match game",
+      "url": "/?mode=single",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "200x200"
+        }
+      ]
+    },
+    {
+      "name": "Multiplayer",
+      "short_name": "Multiplayer",
+      "description": "Play with friends online",
+      "url": "/?mode=multiplayer",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "200x200"
+        }
+      ]
+    }
+  ],
+  "categories": ["games"]
+}
