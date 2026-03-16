@@ -775,7 +775,9 @@ function sendMessage(payload) {
 
 function hostMultiplayer() {
   const timerEnabled = document.getElementById('timer-toggle-btn')?.classList.contains('active') || false;
-  sendMessage({ type: "create-room", timerEnabled });
+  // Calculate initial speedMs: 12 seconds if timer enabled, 0 if disabled
+  const speedMs = timerEnabled ? 12000 : 0;
+  sendMessage({ type: "create-room", speedMs });
 }
 
 function joinMultiplayer(code) {
