@@ -636,6 +636,11 @@ function applyServerState(state) {
     clearTurnTimer();
   }
 
+  // Show restart button for host when first card in game is flipped
+  if (hasFirstCardFlipped && multiplayer.isHost && restartButton) {
+    restartButton.classList.remove('hidden');
+  }
+
   renderScoreboard();
   if (state.gameOver) {
     const highestScore = Math.max(...players.map((player) => player.score));
@@ -705,14 +710,13 @@ function ensureSocket() {
       if (connectionInfo) {
         connectionInfo.classList.add('hidden');
       }
-      // Restore restart button visibility (will be hidden until first card flip)
+      // Restore buttons in local mode
       if (restartButton) {
-        restartButton.classList.add('hidden');
+        restartButton.classList.add('hidden'); // Hidden until first card flip
       }
-      // Re-enable invite and timer buttons in local mode
-      if (inviteButton) inviteButton.disabled = false;
+      if (inviteButton) inviteButton.classList.remove('hidden');
       const timerBtn = document.getElementById('timer-toggle-btn');
-      if (timerBtn) timerBtn.disabled = false;
+      if (timerBtn) timerBtn.classList.remove('hidden');
       setStatus("Disconnected from multiplayer. Starting local game.");
       startGame();
     }
@@ -748,15 +752,17 @@ function ensureSocket() {
         if (connectionInfo) {
           connectionInfo.classList.remove('hidden');
         }
-        // Hide restart button for non-hosts
-        if (!multiplayer.isHost && restartButton) {
-          restartButton.classList.add('hidden');
-        }
-        // Disable invite and timer toggle for non-hosts
+        // Hide buttons for non-hosts in multiplayer
         if (!multiplayer.isHost) {
-          if (inviteButton) inviteButton.disabled = true;
+          if (restartButton) restartButton.classList.add('hidden');
+          if (inviteButton) inviteButton.classList.add('hidden');
           const timerBtn = document.getElementById('timer-toggle-btn');
-          if (timerBtn) timerBtn.disabled = true;
+          if (timerBtn) timerBtn.classList.add('hidden');
+        } else {
+          // Host: ensure buttons are visible
+          if (inviteButton) inviteButton.classList.remove('hidden');
+          const timerBtn = document.getElementById('timer-toggle-btn');
+          if (timerBtn) timerBtn.classList.remove('hidden');
         }
         applyServerState(message.state);
         if (pendingInviteCopy) {
