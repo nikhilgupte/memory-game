@@ -55,6 +55,7 @@
 - When **host** toggles timer on/off, change **applies to all players**
 - Server updates `speedMs` and broadcasts state to all clients
 - All players see consistent timer behavior
+- **Timer resets to 12 seconds** when game is restarted (matched pairs reset to 0)
 
 ### Toggle Button
 - Timer toggle button (`#timer-toggle-btn`) controls whether timer is active
