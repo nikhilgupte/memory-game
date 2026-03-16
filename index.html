@@ -27,108 +27,83 @@
       </header>
 
       <section class="controls" aria-label="Game controls">
-        <!-- Mode tabs -->
-        <div class="mode-tabs" role="tablist">
-          <button class="mode-tab active" role="tab" aria-selected="true" aria-controls="local-panel" data-mode="local">Local</button>
-          <button class="mode-tab" role="tab" aria-selected="false" aria-controls="online-panel" data-mode="online">Online</button>
+        <!-- Hidden radio inputs for app.js compatibility -->
+        <fieldset class="hidden-fieldset" aria-hidden="true">
+          <legend>Players (1-4)</legend>
+          <label>
+            <input type="radio" name="player-count" value="1" />
+            1 player
+          </label>
+          <label>
+            <input type="radio" name="player-count" value="2" checked />
+            2 players
+          </label>
+          <label>
+            <input type="radio" name="player-count" value="3" />
+            3 players
+          </label>
+          <label>
+            <input type="radio" name="player-count" value="4" />
+            4 players
+          </label>
+        </fieldset>
+
+        <!-- Timer toggle -->
+        <button id="timer-toggle-btn" class="icon-toggle active" title="Time to think fast! (12s → 3s)" aria-label="Toggle timer">⏱️</button>
+
+        <!-- Cheat mode toggle -->
+        <div class="timer-toggle">
+          <label>
+            <input type="checkbox" id="cheat-mode" name="cheat-mode" />
+            <span>Cheat Mode</span>
+          </label>
         </div>
 
-        <!-- Local mode panel -->
-        <div id="local-panel" class="mode-panel active" role="tabpanel" aria-labelledby="local-tab">
-          <!-- Hidden radio inputs for app.js compatibility -->
-          <fieldset class="hidden-fieldset" aria-hidden="true">
-            <legend>Players (1-4)</legend>
-            <label>
-              <input type="radio" name="player-count" value="1" />
-              1 player
-            </label>
-            <label>
-              <input type="radio" name="player-count" value="2" checked />
-              2 players
-            </label>
-            <label>
-              <input type="radio" name="player-count" value="3" />
-              3 players
-            </label>
-            <label>
-              <input type="radio" name="player-count" value="4" />
-              4 players
-            </label>
-          </fieldset>
+        <!-- Restart button -->
+        <button id="restart-btn" class="start-button" type="button">Restart Game</button>
 
-          <!-- Timer toggle -->
-          <div class="timer-toggle">
-            <label>
-              <input type="checkbox" id="timer-enabled" name="timer-enabled" checked />
-              <span>Timer (12s → 3s)</span>
-            </label>
-          </div>
-
-          <!-- Cheat mode toggle -->
-          <div class="timer-toggle">
-            <label>
-              <input type="checkbox" id="cheat-mode" name="cheat-mode" />
-              <span>Cheat Mode</span>
-            </label>
-          </div>
-
-          <!-- Restart button -->
-          <button id="restart-btn" class="start-button" type="button">Restart Game</button>
-
-          <!-- Player count pill buttons -->
-          <div class="player-count-selector">
-            <label class="player-pill">
-              <input type="radio" name="player-count" value="1" />
-              <span>1</span>
-            </label>
-            <label class="player-pill">
-              <input type="radio" name="player-count" value="2" checked />
-              <span>2</span>
-            </label>
-            <label class="player-pill">
-              <input type="radio" name="player-count" value="3" />
-              <span>3</span>
-            </label>
-            <label class="player-pill">
-              <input type="radio" name="player-count" value="4" />
-              <span>4</span>
-            </label>
-          </div>
-
-          <button id="invite-btn" class="secondary-button" type="button">Copy Share Link</button>
+        <!-- Player count pill buttons -->
+        <div class="player-count-selector">
+          <label class="player-pill">
+            <input type="radio" name="player-count" value="1" />
+            <span>1</span>
+          </label>
+          <label class="player-pill">
+            <input type="radio" name="player-count" value="2" checked />
+            <span>2</span>
+          </label>
+          <label class="player-pill">
+            <input type="radio" name="player-count" value="3" />
+            <span>3</span>
+          </label>
+          <label class="player-pill">
+            <input type="radio" name="player-count" value="4" />
+            <span>4</span>
+          </label>
         </div>
 
-        <!-- Online mode panel (hidden by default) -->
-        <div id="online-panel" class="mode-panel" role="tabpanel" aria-labelledby="online-tab">
-          <!-- Timer toggle for online -->
-          <div class="timer-toggle">
-            <label>
-              <input type="checkbox" id="online-timer-enabled" name="online-timer-enabled" checked />
-              <span>Timer (12s → 3s)</span>
-            </label>
-          </div>
-          <div class="online-controls">
-            <button id="host-btn" class="primary-button" type="button">Host Multiplayer</button>
-            <div class="join-section">
-              <input
-                id="room-input"
-                type="text"
-                inputmode="text"
-                autocomplete="off"
-                placeholder="Enter room code"
-                aria-label="Room code"
-              />
-              <button id="join-btn" class="secondary-button" type="button">Join Room</button>
-            </div>
-          </div>
-          <p class="connection-info">
-            Room: <span id="room-code">-</span> · <span id="connection-status">Offline</span>
-          </p>
+        <!-- Invite Players button -->
+        <button id="invite-btn" class="secondary-button" type="button">Invite Players</button>
+
+        <!-- Manual room code join (fallback) -->
+        <div class="join-section">
+          <input
+            id="room-input"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="Enter room code"
+            aria-label="Room code"
+          />
+          <button id="join-btn" class="secondary-button" type="button">Join Room</button>
         </div>
 
         <!-- Status bar -->
         <div class="status-bar">
           <p id="status" class="status" role="status" aria-live="polite">Ready to play.</p>
+          <p class="connection-info hidden" id="connection-info">
+            Room: <span id="room-code">-</span> · <span id="connection-status">Offline</span>
+          </p>
         </div>
       </section>
 

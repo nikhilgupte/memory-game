@@ -23,7 +23,6 @@ const OBJECT_TYPES = [
 const board = document.getElementById("game-board");
 const statusText = document.getElementById("status");
 const inviteButton = document.getElementById("invite-btn");
-const hostButton = document.getElementById("host-btn");
 const joinButton = document.getElementById("join-btn");
 const roomInput = document.getElementById("room-input");
 const roomCode = document.getElementById("room-code");
@@ -46,6 +45,7 @@ let turnCount = 0;
 let turnTimerInterval = null;
 let turnTimerDisplay = null;
 let localGameSpeedMs = 0;
+let pendingInviteCopy = false;
 
 const multiplayer = {
   active: false,
@@ -620,7 +620,6 @@ function applyServerState(state) {
   multiplayerGameOver = state.gameOver;
 
   turnCount = state.turnCount || 0;
-  document.getElementById('turn-count').textContent = turnCount;
 
   clearTurnTimer();
   if (!state.gameOver && !state.locked) {
@@ -689,6 +688,16 @@ function ensureSocket() {
       setRoomCode("");
       updateUrlWithRoom(null);
       updateMultiplayerControls();
+      // Restore player count selector to local mode
+      const playerCountSelector = document.querySelector('.player-count-selector');
+      if (playerCountSelector) {
+        playerCountSelector.classList.remove('hidden');
+      }
+      // Hide connection info
+      const connectionInfo = document.getElementById('connection-info');
+      if (connectionInfo) {
+        connectionInfo.classList.add('hidden');
+      }
       setStatus("Disconnected from multiplayer. Starting local game.");
       startGame();
     }
@@ -713,7 +722,21 @@ function ensureSocket() {
         setRoomCode(message.roomId);
         updateUrlWithRoom(message.roomId);
         updateMultiplayerControls();
+        // Hide player count selector in multiplayer mode
+        const playerCountSelector = document.querySelector('.player-count-selector');
+        if (playerCountSelector) {
+          playerCountSelector.classList.add('hidden');
+        }
+        // Show connection info
+        const connectionInfo = document.getElementById('connection-info');
+        if (connectionInfo) {
+          connectionInfo.classList.remove('hidden');
+        }
         applyServerState(message.state);
+        if (pendingInviteCopy) {
+          pendingInviteCopy = false;
+          doCopyLink();
+        }
         break;
       case "state-update":
         applyServerState(message.state);
@@ -746,7 +769,7 @@ function sendMessage(payload) {
 }
 
 function hostMultiplayer() {
-  const timerEnabled = document.getElementById('online-timer-toggle-btn')?.classList.contains('active') || false;
+  const timerEnabled = document.getElementById('timer-toggle-btn')?.classList.contains('active') || false;
   sendMessage({ type: "create-room", timerEnabled });
 }
 
@@ -760,33 +783,32 @@ function joinMultiplayer(code) {
 
 function fallbackCopyInvite(link) {
   window.prompt("Copy this link to invite others:", link);
-  setStatus(
-    multiplayer.roomId
-      ? "Invite link ready. Share it with your players."
-      : "Share link ready. This device runs its own game."
-  );
+  setStatus("Invite link ready. Share it with your players.");
 }
 
-function copyInviteLink() {
+function doCopyLink() {
   const url = new URL(window.location.href);
-  if (multiplayer.roomId) {
-    url.searchParams.set("room", multiplayer.roomId);
-  }
+  url.searchParams.set("room", multiplayer.roomId);
   const link = url.toString();
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard
       .writeText(link)
-      .then(() =>
-        setStatus(
-          multiplayer.roomId
-            ? "Invite link copied. Share it with your players."
-            : "Share link copied. This device runs its own game."
-        )
-      )
+      .then(() => setStatus("Invite link copied! Share it to let others join."))
       .catch(() => fallbackCopyInvite(link));
-    return;
+  } else {
+    fallbackCopyInvite(link);
   }
-  fallbackCopyInvite(link);
+}
+
+function copyInviteLink() {
+  if (multiplayer.roomId) {
+    // Already in a room — just copy the link
+    doCopyLink();
+  } else {
+    // Create a room first, copy link once room-created fires
+    pendingInviteCopy = true;
+    hostMultiplayer();
+  }
 }
 
 board.addEventListener("click", (event) => {
@@ -803,10 +825,6 @@ inviteButton.addEventListener("click", () => {
   copyInviteLink();
 });
 
-hostButton.addEventListener("click", () => {
-  hostMultiplayer();
-});
-
 joinButton.addEventListener("click", () => {
   const code = roomInput.value.trim().toUpperCase();
   joinMultiplayer(code);
@@ -817,30 +835,6 @@ roomInput.addEventListener("keydown", (event) => {
     const code = roomInput.value.trim().toUpperCase();
     joinMultiplayer(code);
   }
-});
-
-// Mode tab switching
-const modeTabs = document.querySelectorAll(".mode-tab");
-const modePanels = document.querySelectorAll(".mode-panel");
-
-modeTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    const mode = tab.dataset.mode;
-
-    // Update tab states
-    modeTabs.forEach((t) => {
-      t.classList.remove("active");
-      t.setAttribute("aria-selected", "false");
-    });
-    tab.classList.add("active");
-    tab.setAttribute("aria-selected", "true");
-
-    // Update panel visibility
-    modePanels.forEach((panel) => {
-      panel.classList.remove("active");
-    });
-    document.getElementById(`${mode}-panel`).classList.add("active");
-  });
 });
 
 // Restart button
@@ -872,18 +866,11 @@ if (cheatModeCheckbox) {
   });
 }
 
-// Timer toggle buttons
+// Timer toggle button
 const timerToggleBtn = document.getElementById('timer-toggle-btn');
 if (timerToggleBtn) {
   timerToggleBtn.addEventListener('click', () => {
     timerToggleBtn.classList.toggle('active');
-  });
-}
-
-const onlineTimerToggleBtn = document.getElementById('online-timer-toggle-btn');
-if (onlineTimerToggleBtn) {
-  onlineTimerToggleBtn.addEventListener('click', () => {
-    onlineTimerToggleBtn.classList.toggle('active');
   });
 }
 

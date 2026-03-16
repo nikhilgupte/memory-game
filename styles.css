@@ -127,50 +127,9 @@ body {
   gap: 20px;
 }
 
-/* Mode tabs */
-.mode-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 2px solid #e5e7eb;
-  margin-bottom: 8px;
-}
-
-.mode-tab {
-  flex: 1;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  position: relative;
-  border-bottom: 3px solid transparent;
-  transition: color 0.2s ease;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mode-tab:hover {
-  color: var(--text);
-}
-
-.mode-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-}
-
-/* Mode panels */
-.mode-panel {
-  display: none;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.mode-panel.active {
-  display: flex;
+/* Utility: hidden elements */
+.hidden {
+  display: none !important;
 }
 
 /* Hidden fieldset for app.js compatibility */
@@ -453,11 +412,11 @@ input[name="turn-speed"] {
 /* Connection info */
 .connection-info {
   margin: 0;
-  padding: 12px 16px;
-  background: #f3f4f6;
-  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -762,10 +721,6 @@ input[name="turn-speed"] {
     gap: 16px;
   }
 
-  .mode-tab {
-    padding: 10px 12px;
-    font-size: 0.95rem;
-  }
 
   .player-count-selector {
     grid-template-columns: repeat(4, 1fr);
