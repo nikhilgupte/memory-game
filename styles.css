@@ -112,10 +112,6 @@ body {
   display: none;
 }
 
-.app.ui-hidden .scoreboard-section {
-  display: none;
-}
-
 /* Controls section */
 .controls {
   background: #ffffff;
