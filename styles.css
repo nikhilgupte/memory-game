@@ -635,7 +635,13 @@ input[name="turn-speed"] {
 }
 
 .card-front.pattern-solid {
-  background: linear-gradient(135deg, var(--card-front) 0%, rgba(60, 70, 90, 0.3) 100%) !important;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--card-front),
+    var(--card-front) 10px,
+    rgba(255, 255, 255, 0.08) 10px,
+    rgba(255, 255, 255, 0.08) 12px
+  ) !important;
 }
 
 .card-back img {
