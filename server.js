@@ -73,6 +73,14 @@ function getNextActiveIndex(room, startIndex) {
 }
 
 function buildState(room) {
+  // Calculate dynamic speedMs based on pairs found (12s → 3s as game progresses)
+  let speedMs = 0;
+  if (room.speedMs) {
+    const pairsDiscovered = room.matched.size;
+    const timeSeconds = Math.max(3, 12 - (pairsDiscovered / TOTAL_PAIRS) * 9);
+    speedMs = Math.floor(timeSeconds * 1000);
+  }
+
   return {
     roomId: room.id,
     deck: room.deck,
@@ -90,7 +98,7 @@ function buildState(room) {
     locked: room.locked,
     gameOver: room.matched.size === TOTAL_PAIRS,
     turnCount: room.turnCount,
-    speedMs: room.speedMs,
+    speedMs: speedMs,
   };
 }
 
