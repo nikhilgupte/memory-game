@@ -555,9 +555,9 @@ function startGame() {
   if (multiplayer.active) {
     return;
   }
-  // Hide restart button until game is in play
+  // Hide restart button until first card is flipped
   if (restartButton) {
-    restartButton.style.display = 'none';
+    restartButton.classList.add('hidden');
   }
   players = Array.from({ length: getPlayerCount() }, (_, index) => ({
     name: `Player ${index + 1}`,
@@ -852,7 +852,7 @@ roomInput.addEventListener("keydown", (event) => {
 // Restart button
 const restartButton = document.getElementById('restart-btn');
 if (restartButton) {
-  restartButton.style.display = 'none'; // Hidden until game starts
+  restartButton.classList.add('hidden'); // Hidden until game starts
   restartButton.addEventListener('click', () => {
     if (multiplayer.active) {
       sendMessage({ type: "restart-game" });
@@ -864,7 +864,7 @@ if (restartButton) {
 
 function showRestartButton() {
   if (restartButton) {
-    restartButton.style.display = 'block';
+    restartButton.classList.remove('hidden');
   }
 }
 
