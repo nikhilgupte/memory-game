@@ -416,8 +416,9 @@ input[name="turn-speed"] {
   font-weight: 500;
 }
 
-/* Turn timer */
+/* Turn timer - always takes up space, never collapses */
 .turn-timer {
+  display: flex !important;
   width: 100%;
   min-width: 0;
   height: 6px;
@@ -433,6 +434,7 @@ input[name="turn-speed"] {
 .turn-timer.hidden {
   opacity: 0;
   pointer-events: none;
+  /* Still displays and reserves space, just invisible */
 }
 
 .timer-bar {
