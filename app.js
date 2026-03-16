@@ -313,7 +313,7 @@ function renderBoard() {
     button.dataset.matchId = String(card.matchId);
     button.setAttribute("role", "gridcell");
     button.setAttribute("aria-label", "Hidden card");
-    let frontText = '?';
+    let frontText = '';
     if (cheatMode) {
       frontText = String(card.matchId);
     }
