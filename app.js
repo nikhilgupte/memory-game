@@ -866,15 +866,6 @@ function showRestartButton() {
   }
 }
 
-// Cheat mode toggle
-const cheatModeCheckbox = document.getElementById('cheat-mode');
-if (cheatModeCheckbox) {
-  cheatModeCheckbox.addEventListener('change', () => {
-    if (deck.length > 0) {
-      renderBoard();
-    }
-  });
-}
 
 // Timer toggle button
 const timerToggleBtn = document.getElementById('timer-toggle-btn');
@@ -897,6 +888,13 @@ const roomParam = new URLSearchParams(window.location.search).get("room");
 if (roomParam) {
   roomInput.value = roomParam;
   joinMultiplayer(roomParam.toUpperCase());
+}
+
+// Enable cheat mode if ?cheat=on is in the URL
+const cheatParam = new URLSearchParams(window.location.search).get("cheat");
+const cheatModeCheckbox = document.getElementById('cheat-mode');
+if (cheatParam === "on" && cheatModeCheckbox) {
+  cheatModeCheckbox.checked = true;
 }
 
 updateMultiplayerControls();

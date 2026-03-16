@@ -51,13 +51,8 @@
         <!-- Timer toggle -->
         <button id="timer-toggle-btn" class="icon-toggle active" title="Time to think fast! (12s → 3s)" aria-label="Toggle timer">⏱️</button>
 
-        <!-- Cheat mode toggle -->
-        <div class="timer-toggle">
-          <label>
-            <input type="checkbox" id="cheat-mode" name="cheat-mode" />
-            <span>Cheat Mode</span>
-          </label>
-        </div>
+        <!-- Hidden cheat mode checkbox (controlled by ?cheat=on query param) -->
+        <input type="checkbox" id="cheat-mode" name="cheat-mode" style="display: none;" />
 
         <!-- Restart button -->
         <button id="restart-btn" class="start-button" type="button">Restart Game</button>
