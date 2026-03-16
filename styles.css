@@ -425,20 +425,14 @@ input[name="turn-speed"] {
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 16px;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s ease;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .turn-timer.hidden {
-  /* Always reserve space, just invisible */
   opacity: 0;
   pointer-events: none;
-}
-
-.turn-timer:not(.hidden) {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .timer-bar {

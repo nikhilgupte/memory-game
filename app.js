@@ -432,8 +432,7 @@ function startTurnTimer(ms) {
     return;
   }
   console.log('Timer started for', ms, 'ms');
-  timerEl.style.opacity = '1';
-  timerEl.style.pointerEvents = 'auto';
+  timerEl.classList.remove('hidden');
   fillEl.style.transition = 'none';
   fillEl.style.width = '100%';
   const start = Date.now();
@@ -491,8 +490,7 @@ function clearTurnTimer() {
   }
   const timerEl = document.getElementById('turn-timer');
   if (timerEl) {
-    timerEl.style.opacity = '0';
-    timerEl.style.pointerEvents = 'none';
+    timerEl.classList.add('hidden');
     timerEl.classList.remove('urgent');
   }
 }
