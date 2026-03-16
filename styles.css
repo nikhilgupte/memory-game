@@ -608,39 +608,36 @@ input[name="turn-speed"] {
   transform: scale(0.98);
 }
 
-/* Subtle card front (face-down) patterns */
+/* Subtle card front (face-down) patterns - layer over random background color */
 .card-front.pattern-lines {
-  background: repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
     45deg,
-    var(--card-front),
-    var(--card-front) 8px,
-    rgba(60, 70, 90, 0.6) 8px,
-    rgba(60, 70, 90, 0.6) 10px
+    transparent,
+    transparent 8px,
+    rgba(0, 0, 0, 0.3) 8px,
+    rgba(0, 0, 0, 0.3) 10px
   ) !important;
 }
 
 .card-front.pattern-dots {
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
-  background-size: 12px 12px;
-  background-color: var(--card-front) !important;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1.5px, transparent 1.5px) !important;
+  background-size: 12px 12px !important;
 }
 
 .card-front.pattern-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 16px 16px;
-  background-color: var(--card-front) !important;
+    linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px) !important;
+  background-size: 16px 16px !important;
 }
 
 .card-front.pattern-solid {
-  background: repeating-linear-gradient(
+  background-image: repeating-linear-gradient(
     -45deg,
-    var(--card-front),
-    var(--card-front) 10px,
-    rgba(255, 255, 255, 0.08) 10px,
-    rgba(255, 255, 255, 0.08) 12px
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.12) 10px,
+    rgba(255, 255, 255, 0.12) 12px
   ) !important;
 }
 

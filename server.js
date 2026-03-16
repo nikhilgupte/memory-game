@@ -77,7 +77,7 @@ function buildState(room) {
   let speedMs = 0;
   if (room.speedMs) {
     const pairsDiscovered = room.matched.size;
-    const timeSeconds = Math.max(3, 12 - (pairsDiscovered / TOTAL_PAIRS) * 9);
+    const timeSeconds = Math.max(3, 8 - (pairsDiscovered / TOTAL_PAIRS) * 5);
     speedMs = Math.floor(timeSeconds * 1000);
   }
 

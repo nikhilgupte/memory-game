@@ -40,10 +40,10 @@
 
 ### Timing
 - Each turn gets its own independent timer
-- Timer duration: **12 seconds to 3 seconds** (scales based on pairs found)
-  - At start (0 pairs found): 12 seconds
+- Timer duration: **8 seconds to 3 seconds** (scales based on pairs found)
+  - At start (0 pairs found): 8 seconds
   - At end (all pairs found): 3 seconds
-  - Formula: `max(3, 12 - (pairsDiscovered / TOTAL_PAIRS) * 9)`
+  - Formula: `max(3, 8 - (pairsDiscovered / TOTAL_PAIRS) * 5)`
 - **Timer visible to all players** in multiplayer (not just current player)
 
 ### Behavior on Timeout

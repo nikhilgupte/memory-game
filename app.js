@@ -50,6 +50,7 @@ let localGameSpeedMs = 0;
 let pendingInviteCopy = false;
 let multiplayerTurnTimerStarted = false;
 let currentCardBackPattern = "";
+let currentCardBackColor = "";
 
 const CARD_BACK_PATTERNS = ["pattern-lines", "pattern-dots", "pattern-grid", "pattern-solid"];
 
@@ -302,6 +303,14 @@ function renderScoreboard() {
   });
 }
 
+function getRandomDarkColor() {
+  // Generate random dark colors (hues 0-360, low saturation for dark tones)
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = Math.floor(Math.random() * 30) + 20; // 20-50%
+  const lightness = Math.floor(Math.random() * 20) + 35; // 35-55% (dark)
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 function renderBoard() {
   board.innerHTML = "";
   const cheatMode = document.getElementById('cheat-mode')?.checked || false;
@@ -318,7 +327,7 @@ function renderBoard() {
       frontText = String(card.matchId);
     }
     button.innerHTML =
-      `<span class="card-face card-front ${currentCardBackPattern}">${frontText}</span>` +
+      `<span class="card-face card-front ${currentCardBackPattern}" style="background-color: ${currentCardBackColor}; --card-color: ${currentCardBackColor};">${frontText}</span>` +
       `<span class="card-face card-back"><img src="${card.image}" alt="" aria-hidden="true" /></span>`;
     if (cheatMode) {
       button.classList.add('cheat-mode');
@@ -546,9 +555,9 @@ function handleCardSelection(index) {
     // Check if timer is enabled
     const timerEnabled = document.getElementById('timer-toggle-btn')?.classList.contains('active') || false;
     if (timerEnabled) {
-      // Calculate time based on pairs discovered: 12s at start, 3s when all pairs found
+      // Calculate time based on pairs discovered: 8s at start, 3s when all pairs found
       const pairsDiscovered = matchedPairs;
-      const timeSeconds = Math.max(3, 12 - (pairsDiscovered / TOTAL_PAIRS) * 9);
+      const timeSeconds = Math.max(3, 8 - (pairsDiscovered / TOTAL_PAIRS) * 5);
       const timeMs = timeSeconds * 1000;
       console.log('Pairs discovered:', pairsDiscovered, 'Time per turn:', timeSeconds, 's');
       startTurnTimer(timeMs);
@@ -587,8 +596,9 @@ function startGame() {
   matchedPairs = 0;
   multiplayerGameOver = false;
   turnCount = 0;
-  // Pick a random card back pattern for this game
+  // Pick a random card back pattern and color for this game
   currentCardBackPattern = CARD_BACK_PATTERNS[Math.floor(Math.random() * CARD_BACK_PATTERNS.length)];
+  currentCardBackColor = getRandomDarkColor();
   deck = createDeck();
   currentDeckSignature = "";
 
@@ -616,6 +626,9 @@ function applyServerState(state) {
   if (signature !== currentDeckSignature) {
     deck = buildDeckFromOrder(state.deck);
     currentDeckSignature = signature;
+    // Generate a new color and pattern for each new game
+    currentCardBackPattern = CARD_BACK_PATTERNS[Math.floor(Math.random() * CARD_BACK_PATTERNS.length)];
+    currentCardBackColor = getRandomDarkColor();
     renderBoard();
   }
 
@@ -767,8 +780,9 @@ function ensureSocket() {
         updateUrlWithRoom(message.roomId);
         updateMultiplayerControls();
         multiplayerTurnTimerStarted = false;
-        // Pick a random card back pattern for this game
+        // Pick a random card back pattern and color for this game
         currentCardBackPattern = CARD_BACK_PATTERNS[Math.floor(Math.random() * CARD_BACK_PATTERNS.length)];
+        currentCardBackColor = getRandomDarkColor();
         // Hide player count selector in multiplayer mode
         const playerCountSelector = document.querySelector('.player-count-selector');
         if (playerCountSelector) {
