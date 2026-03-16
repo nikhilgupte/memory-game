@@ -907,6 +907,12 @@ const timerToggleBtn = document.getElementById('timer-toggle-btn');
 if (timerToggleBtn) {
   timerToggleBtn.addEventListener('click', () => {
     timerToggleBtn.classList.toggle('active');
+    // If in multiplayer and host, broadcast timer change to all players
+    if (multiplayer.active && multiplayer.isHost) {
+      const timerEnabled = timerToggleBtn.classList.contains('active');
+      const speedMs = timerEnabled ? 12000 : 0;
+      sendMessage({ type: "update-timer", speedMs });
+    }
   });
 }
 

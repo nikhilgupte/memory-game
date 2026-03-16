@@ -289,6 +289,20 @@ function handleRestart(ws) {
   broadcast(room, { type: "state-update", state: buildState(room) });
 }
 
+function handleUpdateTimer(ws, { speedMs = 0 } = {}) {
+  const room = rooms.get(ws.roomId);
+  if (!room) {
+    send(ws, { type: "error", message: "Room not found." });
+    return;
+  }
+  if (room.hostId !== ws.playerId) {
+    send(ws, { type: "error", message: "Only the host can change the timer." });
+    return;
+  }
+  room.speedMs = speedMs;
+  broadcast(room, { type: "state-update", state: buildState(room) });
+}
+
 function handleDisconnect(ws) {
   const room = rooms.get(ws.roomId);
   if (!room) {
@@ -330,6 +344,9 @@ wss.on("connection", (ws) => {
         break;
       case "restart-game":
         handleRestart(ws);
+        break;
+      case "update-timer":
+        handleUpdateTimer(ws, { speedMs: message.speedMs });
         break;
       default:
         send(ws, { type: "error", message: "Unknown message type." });
